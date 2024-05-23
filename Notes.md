@@ -44,6 +44,13 @@ To run the development server
 
     [sudo] ng serve
 
+To create the component folder
+
+    [sudo] ng generate component my-component
+    [sudo] ng g c my-component
+    [sudo] ng g c my-component --skip-tests
+    [sudo] ng g c my-component/nested
+
 Angular first load the index.html page then we have these dynamically injected script imports and there imports will dynamically replace app-root with our own component.
 
 # TypeScript
