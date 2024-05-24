@@ -329,3 +329,9 @@ would replace
 The advantage of the new syntax is that it can be slightly more efficient under the hood and that it does not rely on NgFor or the CommonModule being imported / available.
 
 The track item.id part is required when using this new syntax - it ensures that Angular can efficiently track and re-render (if needed) the list items.
+
+# Debugging
+
+Javascript files supports source maps, source maps are a little of addition, DCLI adds kind of adds to our bundle which allow the browser to translate our javascript code to typescript code or to map simply our javascript code to our typescript file. In the development only these source maps will be stripped out for production.
+
+In order to debug our typescript files we can go to the developer mode> sources> webpack> . folder> src> app
