@@ -681,6 +681,13 @@ It can be useful in the case when we are migrating from one to another.
 
 We don't need to have only one module, if our application is large it is better to break the app module into multiple modules.
 
+    @NgModule({
+    declarations: [CardComponent],
+    exports: [CardComponent],
+    })
+    export class SharedModule {}
+    //We can mention the component that is needed and also needed to mention the component in the export to tell the angular the Card Component is available to all the modules that uses the shared module.
+
 # Debugging
 
 Javascript files supports source maps, source maps are a little of addition, DCLI adds kind of adds to our bundle which allow the browser to translate our javascript code to typescript code or to map simply our javascript code to our typescript file. In the development only these source maps will be stripped out for production.
