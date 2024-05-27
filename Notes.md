@@ -645,6 +645,42 @@ Angular modules exist due to historic reasons, as there was no standalone compon
 The difference between these two is that the other component that we use in a component need to be specified in the imports of that component in standalone components but in angular modules instead of importing the components on per component basis, we instead create a module that simply combines all the components.
 The advantage is that the component configuration gets leaner but on the other side we have to create separate module and it is not clear which component is using which other component.
 
+We need to use this to bootstrap angular app in main.ts
+
+    platformBrowserDynamic().bootstrapModule(AppModule);
+    //AppModule is the root module of our application
+    //bootstrapModule is a function that takes a module as an argument and bootstraps the application
+    //platformBrowserDynamic is a function that returns a platform object that can be used to bootstrap the application
+
+After that we can either remove the standalone and import config from component or set standalone to false and remove imports. Then create app.module.ts and
+
+    @NgModule({
+      declarations: [
+        AppComponent,
+        UserComponent,
+        TasksComponent,
+      ],
+      bootstrap: [AppComponent],
+    })
+    export class AppModule {}
+
+We can also keep the component standalone while using the angular module by adding the import configuration in NgModule decorator in app Module.
+It can be useful in the case when we are migrating from one to another.
+
+    @NgModule({
+         declarations: [
+           AppComponent,
+           UserComponent,
+           TasksComponent,
+         ],
+         bootstrap: [AppComponent],
+         imports: [BrowserModule, FormsModule, NgModule],
+
+    })
+    export class AppModule {}
+
+We don't need to have only one module, if our application is large it is better to break the app module into multiple modules.
+
 # Debugging
 
 Javascript files supports source maps, source maps are a little of addition, DCLI adds kind of adds to our bundle which allow the browser to translate our javascript code to typescript code or to map simply our javascript code to our typescript file. In the development only these source maps will be stripped out for production.
