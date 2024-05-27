@@ -2,6 +2,17 @@
 
 Angular is a Javascript Framework which allows us to create reactive single page application.
 Although we seem to visit different pages but it is a single page, with one html file and bunch of javascript code, every change is rendered in browser.
+It helps with building interactive, modern web user interface.
+Angular is also a collection of tools and features like CLI, Debugging tools, IDE plugins.
+Framework like Angular simplify the process of building complex, interactive web user interfaces.
+
+Angular bring these four main things to the table-
+
+1. We can write declarative code instead of the imperative code. In imperative code we write step-by-step instructions that tell the browser what to do. In declarative code be define the target states, so in the some markup that are unlocked by angular that will not work with just vanilla javascript. And then we write the logic when these state got activated and deactivated when a event occurs, and then its Angular job to update the visible user interface.
+2. Separation of concern via component. These are custom html elements. We can break up complex applications into simple building blocks, split up responsibilities and concerns, build a component once and reuse it as much as we want. Overall better development process. Modular application.
+3. Embraces some object oriented programming features.
+4. Typescript
+
 Because it gives the user very reactive user experience. Javascript is much faster than to reach out server for every change.
 And if we need data from the server we simply load the data in background, so the user get the same experience.
 In this, Javascript, DOM changes, whatever displayed on the page (HTML code) during runtime. That's why we never see the refresh icon.
@@ -10,6 +21,12 @@ In this, Javascript, DOM changes, whatever displayed on the page (HTML code) dur
 
 AngularJs (Angular 1) - Was not future proof due to the way it was written.
 Angular1, Angular2, Angular4 ... (Angular3 was skipped)
+
+Angular 2 - Was a complete rewrite of AngularJs. It was a complete new framework.
+Angular has been super stable framework. Any changes are made in very backward-compatible way.
+
+Angular 14 introduced standalone components.
+Angular 16 introduced signals.
 
 Updating npm:
 
@@ -144,7 +161,13 @@ doesn't exist in the vanilla javascript
 
 will add the tsconfig.json
 
-    npm install --save bootstrap@3
+    @Input() avatar!: string;
+    //The ! mark told that  that value of the variable will be initialized even though typescript can't find it in the code.
+
+     @Input({ required: true }) avatar!: string;
+     //Ensures that the input has the definitely a value initialized otherwise it will throw the error.
+
+npm install --save bootstrap@3
 
 # The Basics
 
@@ -160,13 +183,50 @@ The AppModule is the root module of our application. It is the entry point of ou
 AppModule comes from app.module,ts file, in which @NgModule have an object in which there is bootstrap array which basically lists all the components that should be know to angular at the point of time, it analyzes our index.html file.
 Therefore angular knows about the AppComponent, it reads app.component.ts file and therefore knows this selector app route in turn its knows the html and css file with which to replace our app-root.
 
+# Angular Essentials
+
+## Project Structure
+
+tsconfig files simply control how typescript code will be compiled to the typescript code under the hood. The compilation will be triggered automatically by angular cli.
+
+package file manage the dependency of our applications.
+
+angular.json which contains extra configurations settings for angular cli and angular related tools.
+
+.editorconfig file contain rule for code editor for how the code should be formatted.
+
+src>app where we build our angular components and write angular code.
+
+style.css sets global style that will apply to the entire web application across all components.
+
+index.html file is the main html file which will be loaded when the visitor visits website.
+
+main.ts first code file to be executed when the angular application is loaded in the browser.
+
+assets file where we could store images.
+
 ## Components
+
+Decorators like @Component are used by Angular to add metadata & configuration to classes (and other things, as you'll see throughout the course).
+
+In addition, TypeScript gives you more control over how properties are defined in classes.
 
 There is main app component, root component which holds our entire application. So this root component, to this template, this html file off the app component is where we will add other components.
 These component have their own template , own styling and they can be used more than once.
 
 The nested components will not be added to the index.html file but the root component html file.
 Their selector will be added to app component HTML file. As the whole application is bootstrapped with the root component.
+
+    if inside the component we set the standalone property as true it will mark the component as standalone component. Component where standalone property is false are called module based component.
+
+The standalone property is only available in angular 14 and above.
+Despite the standalone property being true or false the way we work with the components and general features are same.
+
+The aim behind the component tree is that the component that are the part of the same application or same tree will be able to work together and communicate with each other.
+
+We have to register the App components in order to use them in them other components. For older angular version(ogv) we can do so by going in app.module.ts and in ngModule decorator providing the component in the declarations. For new Angular version (ngv) we need to provide the component in the component decorator imports of the component where we wish to use it.
+
+In ngv you have to add the src/asstes to the the asset in angular.json
 
 ## AppModule and Component Declaration
 
@@ -217,6 +277,37 @@ We want to output data from our typescript code in the HTML code we can do so by
 
      String interpolation {{ data }} or Property Binding [property]="data" .
 
+     [src]="'../../assets/users/' + selectedUser.avatar".
+     We can create dynamic value in jit
+
+But such computation should not be done inside the template
+We can do it in the component class and then pass it to the template.
+
+    get imagePath() {
+        return '../../assets/users/' + this.selectedUser.avatar;
+    }
+    //This is a getter function
+    <img [src]="imagePath" />
+
+Property Binding" - a key Angular feature that allows you to bind element properties to dynamic values.
+
+For example, <img [src]="someSrc"> binds the src property of the underlying HTMLImageElement DOM object to the value stored in someSrc.
+
+Whilst it might look like you're binding the src attribute of the <img> tag, you're actually NOT doing that. Instead, property binding really targets the underlying DOM object property (in this case a property that's also called src) and binds that.
+
+For example, when binding ARIA attributes, you can't target an underlying DOM object property.
+
+Since "Property Binding" wants to target properties (and not attributes), that can be a problem. That's why Angular offers a slight variation of the "Property Binding" syntax that does allow you to bind attributes to dynamic values.
+
+It looks like this:
+
+    <div
+    role="progressbar"
+    [attr.aria-valuenow]="currentVal"
+    [attr.aria-valuemax]="maxVal">...</div>
+
+By adding attr in front of the attribute name you want to bind dynamically, you're "telling" Angular that it shouldn't try to find a property with the specified name but instead bind the respective attribute - in the example above, the aria-valuenow and aria-valuemax attributes would be bound dynamically.
+
 And we can react to user event with event Binding (event)="expression".
 We can also use two way binding [(ngModel)]="data" to bind the data in both direction.
 
@@ -258,10 +349,125 @@ You then also need to add the import from @angular/forms in the app.module.ts fi
 
 it provides two way data binding, so that it will trigger the input event and update the field-name in our component and also if the field-name is changed then it will update the value of input element.
 
+## State change - zone.js
+
+Zone.js is a library that allows you to run code in a zone.
+A zone is a context in which you can run code and have it run in a specific way.
+Angular uses zone.js to create so-called zones around our components, which in the end kind of invisible grouping mechanism where it listens for all kinds of events that could trigger state changes.
+For example, you can run code in a zone that will automatically run change detection when the code is done running.
+
+What Zone.js is that it automatically listens to all possible user events that could occur on a website for example, as well as some other possible events that could occur. Like a timer expiring,
+when such a event occurs, it checks the angular application for possible changes and make them.
+
+    export class UserComponent {
+     selectedUser = DUMMY_USERS[randomIndex];
+
+     get imagePath() {
+       return '../../assets/users/' + this.selectedUser.avatar;
+     }
+
+     onSelectUser() {
+       const randomIndex = Math.floor(Math.random() * DUMMY_USERS.length);
+       this.selectedUser = DUMMY_USERS[randomIndex];
+       console.log(this.selectedUser);
+     }
+
+    This is one way of doing state change in which we rely on Zone.js and angular's change detection mechanism. This works automatically, no special instruction required. Supported since angular 2.
+
+    And the other mechanism uses a concept called signal.
+
+## Signal
+
+Using signals to notify angular about value changes and required UI updates. Require usage of special signal instruction and code. Supported since angular 16.
+
+    Signals are trackable data containers
+    A signal is an object that stores a value(any type of value, including nested objects).
+    And then we can use that value in the template.
+    And angular therefore able to setup a subscription behind the scenes which will make sure that when we change that value, angular will be notified about the change, then angular is able to identify in our template where the value (signal) is being used and update these places.
+
+This is how we can create a signal
+
+      export class UserComponent {
+
+        selectedUser = signal(DUMMY_USERS[randomIndex]);
+
+      get imagePath() {
+        return '../../assets/users/' + this.selectedUser().avatar; //this is how we access the value inside the user
+      }
+
+      onSelectUser() {
+        const randomIndex = Math.floor(Math.random() * DUMMY_USERS.length);
+        this.selectedUser.set(DUMMY_USERS[randomIndex]);
+      }
+    }
+
+Advantage of the signal is that it can get rid of Zone.js and this zone concept. So it allows angular to perform change detection and UI updating in more efficient manner. It doesn't have to check everything for every possible event that could anywhere.
+
+For signals unlike zone we will not use getter but
+
+    imagePath = computed(
+    () => '../../assets/users/' + this.selectedUser().avatar
+    );
+
+Angular analyzes if we are reading the value inside the computed function, and if that's the case it again sets up a subscription to that signal that's being used in here, and whenever the signal receives a value and only then angular will recompute the image path here. So it's efficient it will not check everything in the component only this property which is being recomputed.
+
+We can use the signals with the input also
+
+    avatar = input();
+    avatar = input(''); //sets the default value ''
+    avatar = input<string>(''); //sets the default value '' and tells the it is of type string
+    input.required<string>(); //tells that should have value.
+
+These input signals are read only signals that means their value change only outside the component we can't change the value from inside the user component.
+
+## Output and Emitting Data
+
+      @Output() select = new EventEmitter();
+
+       <app-user
+        [id]="users[1].id"
+        [avatar]="users[1].avatar"
+        [name]="users[1].name"
+        (select)="onSelectUser($event)"
+      ></app-user>
+
+There is another way of emitting data instead os using output decorator we can use output function.
+
+    select = output<string>();
+
+This is not give us a signal, and like the output decorator it also give us custom event we can emit.
+
+## Working with potentially undefined values
+
+    @Input() name?: string; or  @Input() name: string | undefined;
+    tells the user can be undefined or string
+    [name]="selectedUser?.name"
+    tells if selectedUser is undefined so use undefined
+
+## Type aliases and interfaces
+
+Sometimes defining the type of variable as object within the component can become cumbersome as they are can be quite large, it is better to outsource them.
+Type aliases are used to define the type of variable.
+Interface can also do the same but they are only applicable for objects
+
+    type User = {
+    id: string;
+    avatar: string;
+    name: string;
+    };
+
+    interface User {
+        id: string;
+        avatar: string;
+        name: string;
+    };
+
 ## Directives
 
+With angular, we can enhance the elements by adding so-called directives to them.
 Directives are instruction in DOM. Components are such kind of instructions in the DOM. As when we use the selector of the component in the template we are instructing the angular to put the component template in the place of this selector in the template that contain the selector.
 Component are a kind of the directives with template.
+Directive unlike components don't have template.
 There can be directives without the template to, we can build such custom directives. We typically add directives with attribute selector, but technically selector of a directive can be configured just like the selector of a component.
 
     ![alt text](image.png)
@@ -316,9 +522,17 @@ ngFor Directive
 If you're in an Angular 17 project (and only then!), you can also use an alternative syntax for outputting conditional content:
 
 Instead of using \*ngFor, you can use a built-in @for template control flow statement.
+The track is used as since we are outputting data dynamically here and angular want to keep the track of every item that is being rendered so that if list input data would change. Angular could use already rendered item list instead of recreating the entire list.
+Track tells which unique identification criteria angular could assign to every list item it outputs.
 
     @for (item of items; track item.id) {
       <li>{{ item.title }}</li>
+    }
+
+    @for (user of users; track user.id) {
+    <li>
+      <app-user [user]="user" (select)="onSelectUser($event)"></app-user>
+    </li>
     }
 
 would replace
@@ -330,8 +544,123 @@ The advantage of the new syntax is that it can be slightly more efficient under 
 
 The track item.id part is required when using this new syntax - it ensures that Angular can efficiently track and re-render (if needed) the list items.
 
+NgModel Directive is an Element enhancement that helps with extracting (or changing) user input values.
+
+    <input ngModel>
+
+We can also use signals with ngModel
+
+## Dynamic CSS styling with class bindings
+
+    <button [class.active]="selected" (click)="onSelectUser()">
+    //Here we can use this and set the property value to true or false.
+
+## Handling Form Submission
+
+The for submission is automatically prevented if we are importing FormsModule. Because inside this form module includes a component built by the angular team, which uses the form element tag as a selector and thus take control of the form under the hood automatically.
+This form component which took control of the form will listen for the submission event and prevent it from happening.
+But we still want to perform some action of our own when the form is submitted. We can do so by using ngSubmit.
+
+    (ngSubmit)
+
+## Content Projection
+
+Content projection is a way to pass content into a component.
+We can use ng-content to pass content into a component.
+If we want to use another component template as a wrapper around the another component we need to pass the ng-content where we want to wrap it or otherwise it will ignore any content other than define in its own component template by default.
+
+    app-card component
+    <div>
+     <ng-content></ng-content>
+    </div>
+
+    wrapped component
+    <app-card>
+    <button [class.active]="selected" (click)="onSelectUser()">
+      <img [src]="imagePath" [alt]="user.name" />
+      <span>{{ user.name }}</span>
+    </button>
+    </app-card>
+
+## Pipes
+
+Pipes are the output transformers, things that transform output in templates.
+
+     <time>{{ task.dueDate | date }}</time>
+     //this will transform the date to particular type which is described by the angular built in transformer date.
+
+     <time>{{ task.dueDate | date: 'fullDate' }}</time>
+
+## Services
+
+The idea behind services is that typically it performs a operation and/or manages some data.
+In order to keep our component code lean and clean which is generally the practice it is better to make utilization of services.
+We can instantiate the service class and make use of that in other components but the problem with this approach is the instance used in each component will be unique, we wouldn't be sharing the same object, so even if we make changes in data in one component it will not be reflected in other component.
+
+The solution to this is to use another powerful tool in conjunction with services is Dependency injection. The idea behind the di is that we don't create the instance but tell angular to do it and let it create it.
+We tell angular what type of value we need and angular creates it and provides it as an argument.
+
+One way to do it is using the constructor of the other component.
+And We can use the @Injectable() decorator to tell angular that this class is a service and can be injected into other components.
+
+    private taskService: TaskService;
+    constructor(taskService: TaskService) {
+      this.taskService = taskService;
+    }
+
+    or
+    constructor(private taskService: TaskService) {}
+    //this will create the instance of the service and inject it into the constructor.
+    but angular will not automatically scan all the files and folders for the TaskService class we have to made it injectable and we can do so by
+
+    @Injectable({ providedIn: 'root' })
+    export class TaskService {}
+
+One other way is using inject function of angular core module.
+
+      private taskService = inject(TaskService);
+
+inject function inject a dependency and provide it as a value for the taskService property.
+
+## Using local storage for Data Storage
+
+    constructor() {
+       const tasks = localStorage.getItem('tasks');
+
+    if (tasks) {
+      this.tasks = JSON.parse(tasks);
+    }
+     }
+
+     private saveTasks() {
+       localStorage.setItem('tasks', JSON.stringify(this.tasks));
+     } // we can call this function wherever change in task data occurs
+
+# Angular Essentials - Working with modules
+
+Aside from standalone way of building components we can use one more way of building components, which is Angular modules.
+We can use Angular modules for grouping components together and for structuring our application.
+Angular modules exist due to historic reasons, as there was no standalone components when angular 2 was released in 2016.
+
+The difference between these two is that the other component that we use in a component need to be specified in the imports of that component in standalone components but in angular modules instead of importing the components on per component basis, we instead create a module that simply combines all the components.
+The advantage is that the component configuration gets leaner but on the other side we have to create separate module and it is not clear which component is using which other component.
+
 # Debugging
 
 Javascript files supports source maps, source maps are a little of addition, DCLI adds kind of adds to our bundle which allow the browser to translate our javascript code to typescript code or to map simply our javascript code to our typescript file. In the development only these source maps will be stripped out for production.
 
-In order to debug our typescript files we can go to the developer mode> sources> webpack> . folder> src> app
+In order to debug our typescript files we can go to the developer mode> sources> webpack> . folder> src> app.
+
+Here we can see our typescript files and we can set the breakpoints and debug our code.
+
+# Components and DataBinding Deep Dive
+
+We can use property and even binding not only on HTML elements and their native properties and events, but also on directives. But we can also use it on our component and bind to our custom properties and events. We can emit our own events.
+
+    By default all properties of components are only accessible inside the components not outside, and this is a good thing as we wouldn't want to bind all the properties from the outside.
+
+So if we want to allow the parent components bind to the property of the child components, we need to add the decorator to that property. Decorator are not only available for the classes.
+
+    We need to add the @Input () decorator to the property that we want to allow to be binded by the parent components.
+
+We can pass the alias inside the @Input('alias-name') then we can bind using the alias-name only not the original property name.
