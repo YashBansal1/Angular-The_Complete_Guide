@@ -1,0 +1,24 @@
+<table *ngIf="results; else fallback">
+  <thead>
+    <tr>
+      <th>Year</th>
+      <th>Investment Value</th>
+      <th>Interest (Years)</th>
+      <th>Total Interest</th>
+      <th>Investment Capital</th>
+    </tr>
+  </thead>
+  <tbody *ngFor="let row of results">
+    <tr>
+      <td>{{ row.year }}</td>
+      <td>{{ row.valueEndOfYear }}</td>
+      <td>{{ row.interest }}</td>
+      <td>{{ row.totalInterest }}</td>
+      <td>{{ row.totalAmountInvested }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #fallback>
+  <p>Please enter some values and press "Calculate".</p>
+</ng-template>
