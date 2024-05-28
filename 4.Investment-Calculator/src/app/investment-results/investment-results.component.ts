@@ -11,5 +11,6 @@ import { CurrencyPipe, NgFor, NgIf } from '@angular/common';
 })
 export class InvestmentResultsComponent {
   //results = input();
-  @Input() results?: InvestmentResult[];
+  // @Input() results?: InvestmentResult[];
+  results = input<InvestmentResult[]>();
 }

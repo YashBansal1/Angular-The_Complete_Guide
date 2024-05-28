@@ -8,7 +8,7 @@
       <th>Investment Capital</th>
     </tr>
   </thead>
-  <tbody *ngFor="let row of results">
+  <tbody *ngFor="let row of results()">
     <tr>
       <td>{{ row.year }}</td>
       <td>{{ row.valueEndOfYear | currency }}</td>
