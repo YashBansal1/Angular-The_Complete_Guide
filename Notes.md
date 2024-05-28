@@ -688,6 +688,16 @@ We don't need to have only one module, if our application is large it is better 
     export class SharedModule {}
     //We can mention the component that is needed and also needed to mention the component in the export to tell the angular the Card Component is available to all the modules that uses the shared module.
 
+## Union Types
+
+To allow for multiple types in a single value you can use Union Types: myVal: number | string
+
+# Angular Essentials - Time to practice
+
+The project structure of this section has one important difference compared to the structure from the previous section: Images (and statically served assets in general) are now stored in the public/ folder - NOT in a nested assets/ folder!
+
+To reference images stored in the public/ folder you would use a path like this: <img src="some-image.png"> - i.e., the public folder name is NOT part of that path (it's NOT <img src="public/some-image.png">)
+
 # Debugging
 
 Javascript files supports source maps, source maps are a little of addition, DCLI adds kind of adds to our bundle which allow the browser to translate our javascript code to typescript code or to map simply our javascript code to our typescript file. In the development only these source maps will be stripped out for production.
