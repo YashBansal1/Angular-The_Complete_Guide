@@ -349,6 +349,8 @@ You then also need to add the import from @angular/forms in the app.module.ts fi
 
 it provides two way data binding, so that it will trigger the input event and update the field-name in our component and also if the field-name is changed then it will update the value of input element.
 
+    ngModel requires that it is within the form and the input have a name attribute.
+
 ## State change - zone.js
 
 Zone.js is a library that allows you to run code in a zone.
