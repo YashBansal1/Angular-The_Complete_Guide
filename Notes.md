@@ -719,3 +719,70 @@ So if we want to allow the parent components bind to the property of the child c
     We need to add the @Input () decorator to the property that we want to allow to be binded by the parent components.
 
 We can pass the alias inside the @Input('alias-name') then we can bind using the alias-name only not the original property name.
+
+## View Encapsulation
+
+Angular provides three different ways to encapsulate the styles of a component:
+
+- Native/ ShadowDom
+- None
+- Emulated (Default)
+
+By default the browser tries to propagate the css styling, but the angular override this functionality of browser and make sure that the styling defined in the css file of the component should apply to that component only.
+
+Each element in angular has a specific attribute associated with it, these are applied by angular. So when we set a style for something like paragraph it doesn't just say set the style of the paragraph but tells that set the style of all the paragraph with this particular attributes associated with them. It by itself changes the style selector and add these attribute selector to all our styles defined for a component.
+It kind of emulates shadow dom, which is a technology not supported by old browsers where each element has its kind of own shadow dom behind it where we can then assign styles to each element.
+This is the default behavior of view encapsulation in angular.
+
+In the component we can set the encapsulation mode according to us
+
+    @Component({
+        selector: 'app-root',
+        templateUrl: './app.component.html',
+        styleUrls: ['./app.component.css'],
+        encapsulation: ViewEncapsulation.None //will make so that there is no view encapsulation as a result property defined it will apply globally affecting other components.
+    })
+
+Native, now called ShadowDom uses the shadowDom but gives same result as emulated but works only in the browser that support shadow dom, so it is better to use emulated.
+
+## Local References
+
+In our template we can create local references. It can be placed in any html element not only input. We can add it with #localReferenceName in our html element. This reference that we create holds a reference to the element in which it is created.
+The reference is just not to value but to the whole HTML element with all its properties.
+Local reference can only be used in the template not in the typescript code.
+
+## View Child
+
+In Angular 8+, the @ViewChild() syntax which you'll see in the next lecture needs to be changed slightly:
+
+Instead of:
+
+@ViewChild('serverContentInput') serverContentInput: ElementRef;
+use
+
+@ViewChild('serverContentInput', {static: true}) serverContentInput: ElementRef;
+The same change (add { static: true } as a second argument) needs to be applied to ALL usages of @ViewChild() (and also @ContentChild() which you'll learn about later) IF you plan on accessing the selected element inside of ngOnInit(). As we will also use the selected element in ngOnInit.
+
+If you DON'T access the selected element in ngOnInit (but anywhere else in your component), set static: false instead!
+
+If you're using Angular 9+, you only need to add { static: true } (if needed) but not { static: false }.
+
+We can directly gain access to the local reference or to the element directly from our typescript code using ViewChild. The local reference accessed in our typescript code is of the ElementRef type which is a angular type. This has native element property which give access tot he underlying element which now has a value.
+
+## Lifecycle of components
+
+As angular create component it goes through some of phases, and give us the opportunity to hook into those phases and execute some code.
+The phases/hooks are-
+
+1. ngOnChanges -> First phase we can hook onto, It can execute multiple times, first when the component is created then called after a bound input property changes each time (Properties decorated with @Input()). Takes an argument of type SimpleChanges, called before ngOnInit().
+2. ngOnInit() -> Executed once the component has been initialized. ngOnInit will execute after the constructor.
+3. ngOnCheck() -> called during every change detection run. Change detection is simply the system by which angular determines if something has changed on the template of the component.
+4. ngAfterContentInit - called after content (ng-content) has been projected into view.
+5. ngAfterContentChecked - Called every time the projected content has been checked.
+6. ngAfterViewInit - Called after the component's view (and child view) has been initialized. Can't access the element before this/
+7. ngAfterViewChecked - Called every time the view (and child views) have been checked.
+8. ngOnDestroy -> called once the component is destroyed.
+
+## Content child
+
+content child is just like the view child but is used to access the element that are not part of the view but the part of the content.
