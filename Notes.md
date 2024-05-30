@@ -902,3 +902,86 @@ This is the ngif code and we use star as it translates to
           </li>
         </div>
         </ng-template>
+
+# Services and Dependency Injection
+
+Angular uses a concept called Dependency Injection (DI) to provide services to components.
+A service is a class that provides some functionality that can be used by components.
+Angular provides a way to register services with the injector, which is responsible for providing instances of services to components that request them.
+We can create a service by creating a class and then registering it with the injector or alternatively we can create just the class and provide it in the providers configuration of the component where we want to use this service.
+
+We can register a service with the injector by adding the @Injectable() decorator to the service class
+and then listing it in the providers array of the module.
+We can then inject the service into a component by adding it to the component's constructor.
+Angular will then provide an instance of the service to the component.
+We can also use the @Inject decorator to specify the token that should be used to inject the service
+into the component.
+We can also use the providedIn property of the @Injectable() decorator to specify the module
+that should provide the service.
+
+Instead of injecting LoggingService like this:
+
+    @Component(...)
+    export class AccountComponent {
+      // @Input() & @Output() code as shown in the previous lecture
+
+      constructor(private loggingService: LoggingService) {}
+    }
+
+    you could inject it like this, by using the inject() function:
+
+    import { Component, Input, Output, inject } from '@angular/core'; // <- Add inject import
+
+    @Component(...)
+    export class AccountComponent {
+      // @Input() & @Output() code as shown in the previous lecture
+      private loggingService?: LoggingService; // <- must be added
+
+      constructor() {
+        this.loggingService = inject(LoggingService);
+      }
+
+Angular Dependency injector is a hierarchical injector. That means if we provide the service in one of the component then angular knows how to create the instance of the service for this component and all its child components and child components of the child component will receive the same instance of this service.
+There are other places we can provide the service too.
+The highest possible level is
+AppModule - Same instance of the service is available Application-wide.
+AppComponent - Same instance of the service is available for all components (but not for the other services).
+
+Using the providers configuration to use a service can be problematic as dependency are injected hierarchically, so when we create the instance of service in a child component when it is already in parent component, child component service instance override that of the parent component, which as a result becomes a different instance altogether.
+
+We can also inject one service into another provided that the service in which we want to inject in should be injectable (@Injectable()).
+
+We can use services for cross component communication
+
+    To create the event in the service
+    statusUpdated = new EventEmitter<string>();
+
+    To emit the event from the component
+    this.accountsService.statusUpdated.emit(status);
+
+    To listen to the events in component
+     this.accountsService.statusUpdated.subscribe((status: string) => {
+         alert('New Status:' + status);
+       });
+
+If you're using Angular 6+ (check your package.json to find out), you can provide application-wide services in a different way.
+
+Instead of adding a service class to the providers[] array in AppModule , you can set the following config in @Injectable() :
+
+    @Injectable({providedIn: 'root'})
+    export class MyService { ... }
+    This is exactly the same as:
+
+    export class MyService { ... }
+    and
+
+    import { MyService } from './path/to/my.service';
+
+    @NgModule({
+        ...
+        providers: [MyService]
+    })
+    export class AppModule { ... }
+
+The "new syntax" does offer one advantage though:
+Services can be loaded lazily by Angular (behind the scenes) and redundant code can be removed automatically. This can lead to a better performance and loading speed - though this really only kicks in for bigger services and apps in general.
