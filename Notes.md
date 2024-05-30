@@ -786,3 +786,119 @@ The phases/hooks are-
 ## Content child
 
 content child is just like the view child but is used to access the element that are not part of the view but the part of the content.
+
+# Directives
+
+There are two types of Directive-
+Attribute Directive - As they sit on elements just like attributes.
+Look like a normal HTML Attribute( possibly with databinding or event binding). Only affect/change the element they are added to.
+
+Structural Directives - Basically do the same but also change the structure around the element. Look like normal HTML attribute but have a leading \* (for desugaring). Affect a whole area in the DOM (elements get added/ removed).
+
+import { Directive, ElementRef, OnInit, Renderer2 } from '@angular/core';
+
+Custom Directive using the renderer
+
+    @Directive({
+      selector: '[appBetterHighlight]',
+    })
+    export class BetterHighlightDirective implements OnInit {
+      constructor(private elementRef: ElementRef, private render: Renderer2) {}
+      ngOnInit() {
+        this.render.setStyle(
+          this.elementRef.nativeElement,
+          'backgroundColor',
+          'blue'
+        );
+      }
+
+Custom Directive using elementRef
+
+import { Directive, ElementRef, Input, OnInit } from '@angular/core';
+
+    @Directive({
+      selector: '[appBasicHighlight]',
+    })
+    export class BasicHighlightDirective implements OnInit {
+      constructor(private elementRef: ElementRef) {
+        console.log('BasicHighlightDirective constructor');
+      }
+      ngOnInit() {
+        this.elementRef.nativeElement.style.backgroundColor = 'green';
+      }
+    }
+
+It is better to use the render then the element ref to directly manipulate the dom style as it always not be the case we are running our angular app for browser and thus me may not have access to the dom.
+
+We can use HostListener decorator to listen to any event in our directive and make changes according to those events
+
+    @HostListener('mouseenter') mouseover(eventData: Event) {
+        this.render.setStyle(
+          this.elementRef.nativeElement,
+          'background-color',
+          'green'
+        );
+      }
+
+      @HostListener('mouseleave') mouseleave(eventData: Event) {
+        this.render.setStyle(
+          this.elementRef.nativeElement,
+          'background-color',
+          'red'
+        );
+      }
+
+There is one more easier way than render to set the background Color if this is all we want to do. We can use the HostBinding decorator.
+Using HostBinding we tell that on whichever element this directive sits, please access the style property and on that style property access the background color and set this to particular color.
+
+    @HostBinding('style.backgroundColor') backgroundColor: string = 'red';
+
+If we want to make so that some of the properties are set by the user as they use our directives and ship the properties they want to use, we can do so by custom property binding. Custom event binding also works in the directives.
+
+    @Input() defaultColor: string = 'transparent';
+    @Input() highlightColor: string = 'blue';
+
+    <p
+    appBetterHighlight
+    [defaultColor]="'aliceBlue'"
+    [highlightColor]="'orange'"
+     >
+     </p>
+
+And then use these values to set the properties of the properties.
+Since the binding to directive properties is same as property binding, angular need to figure out if this binding belong to the element or the directive and it do so by simply checking the element own directive and then our custom directive.
+If we want to bind to the property of the directive that has same name as our directive selector we can do so by simply giving an alias for custom property that we are taking as input.
+
+    <p
+    appBetterHighlight
+    [defaultColor]="'aliceBlue'"
+    highlightColor="orange" //we can pass this way to if we are passing a string
+     >
+     </p>
+
+## Structural Directive
+
+ng-template does not render itself but allows us to define a template for angular to use and render it.
+
+     <div *ngIf="!onlyOdd">
+          <li
+            class="list-group-item"
+            [ngClass]="{ even: evenNumber % 2 == 0 }"
+            *ngFor="let evenNumber of evenNumbers"
+          >
+            {{ evenNumber }}
+          </li>
+        </div>
+
+This is the ngif code and we use star as it translates to
+
+     <ng-template [ngIf]="!onlyOdd">
+          <li
+            class="list-group-item"
+            [ngClass]="{ even: evenNumber % 2 == 0 }"
+            *ngFor="let evenNumber of evenNumbers"
+          >
+            {{ evenNumber }}
+          </li>
+        </div>
+        </ng-template>
