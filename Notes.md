@@ -985,3 +985,227 @@ Instead of adding a service class to the providers[] array in AppModule , you ca
 
 The "new syntax" does offer one advantage though:
 Services can be loaded lazily by Angular (behind the scenes) and redundant code can be removed automatically. This can lead to a better performance and loading speed - though this really only kicks in for bigger services and apps in general.
+
+# Changing Pages With routing
+
+Angular ships with its own router which can change the url in the url bar and still use one page but then exchange major parts or lots of parts of that page.
+
+We have to give our routes in app.module.ts
+
+    const appRoutes: Routes = [{ path: 'users', component: UserComponent }];
+
+By themselves our app will know about these routes, so we have to specify them
+
+     imports: [BrowserModule, FormsModule, RouterModule.forRoot(appRoutes)],
+
+RouterModule adds routing functionality to our app, and using forRoot we can register the routes in our app.
+
+So angular this way knows what to render at a particular route but not where. To tell it where instead of using component selector we use router-outlet directive to. This simply marks the place in our document where we want the angular router to load the component of the currently selected route.
+
+    <router-outlet></router-outlet>
+
+Now we can navigate manually by putting the particular route in url bar. To make so that we navigate to a particular route when we click on something we can pass the route in the href tag of the anchor html element but the problem with this is that whenever we navigate to the particular route it refreshes our page, which is not good as our app is restarting each time we navigate.
+To solve this problem we can pass the route to routerLink instead of the href tag.
+
+    <li role="presentation"><a routerLink="/users">Users</a></li>
+
+    or
+
+    <li role="presentation"><a [routerLink]="['/users']">Users</a></li> //specify all the segments of our path as element of the array.
+
+We can either give relative or absolute path in router.
+In relative path (without / ) the given path will be appended to the current route url and with absolute path (start with /) the router will be overwritten to that path.
+We can give path like our folder path ./servers means append it the current ../servers mean go up one level then append it.
+
+If we want to set some property dynamically for the active router link and no other we can do so by using routerLinkActive property
+
+     <li
+          role="presentation"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+
+We pass the property we want to set in routerLinkActive but the problem with this is that it sets the active property for all the routes that come in this route not for an exact match. To avoid this we have to set the second property as shown.
+
+We can also programmatically change the route when some on any event like click (we can still do it using the routerLink)
+
+    export class HomeComponent implements OnInit {
+      constructor(private router: Router) {}
+
+      ngOnInit() {}
+
+      onLoadServers() {
+        // complex calculation
+        this.router.navigate(['/servers']);
+      }
+    }
+
+    In component
+    <button class="btn btn-primary" (click)="onLoadServers()">Load Servers</button
+
+Using Relative Paths in Programmatic Navigation-
+When we programmatically navigates using relative paths unlike routerLink it will not append the relative path at the end of the current path. This is because routerLink knows in which component it sits and therefore it knows what the currently loaded route is. Same is not true for programmatic navigation. If we want it to work in the same way as routerLink we need to pass another object argument in navigate with the key relativeTo of that object set to the value of the active route which we can find using the ActivatedRoute class instance.
+
+    constructor(private router: Router, private route: ActivatedRoute){
+
+    }
+
+    this.router.navigate(['/servers'], {relativeTo: this.route});
+
+Passing Parameters with routes-
+
+    const appRoutes: Routes = [{ path: 'users/:id', component: UserComponent }];
+
+    to access the parameter
+    this.route.snapshot.params.paramsName
+
+    Where the route is the ActivatedRoute
+
+Similarly we can pass multiple parameters in our route
+
+      { path: 'users/:id/:name', component: UserComponent },
+      and get the access in the same way
+
+      and we can add
+      [routerLink]="['/users', user.id, user.name]"
+      to make them navigate to particular user with id and name
+
+Now there is a problem with using the snapshot in order to navigate to particular route. The thing is that when we first initialize the component angular instantiate it but when the component is already instantiated it will not destroy our component and reinstantiate it as it doesn't want to destroy and re render the same component as it will cost us the performance. What if we are changing some data, then angular should render it but angular doesn't do that as it doesn't know the data have been changed for the component. So to solve this
+we can use the route object on that there is params property.
+params is an observable.
+
+Basically observable are the features added by some third party packages but heavily used by angular which allows us easily work with the asynchronous tasks. And this is an asynchronous task as we don't know when and how or even if the parameters of our currently loaded route might change in some point in the future.
+So using observable we can subscribe to some even which might happen in future and whenever the parameters change we will get notified so we can perform some task without waiting for it.
+
+    this.route.params.subscribe((params: Params) => {
+          this.user.id = params.id;
+          this.user.name = params.name;
+        });
+
+Whenever the component is destroyed then angular by itself unsubscribe from the route observables but in the case when we use our own observables we need to unsubscribe them by ourselves. We need to unsubscribe from the observables due to the fact because it will live in the memory.
+
+     paramsSubscription: Subscription;
+
+     ngOnDestroy() {
+       this.paramsSubscription.unsubscribe();
+     }
+
+## Passing Query Parameter and Fragments
+
+We can pass query parameters and fragments in our route.
+Query parameters are the parameters which are passed after the question mark in the URL.
+Fragments are the parameters which are passed after the hash symbol in the URL.
+We can pass them in the following way.
+
+    To navigate to it-
+
+    this.router.navigate(['/servers'], {queryParams: {allowEdit: '1'}, fragment: 'loading'});
+
+    <a
+        [routerLink]="['/servers', server.id, 'edit']"
+        [queryParams]="{ allowedEdit: 1 }"
+        fragment="loading"
+        class="list-group-item"
+        *ngFor="let server of servers"
+      >
+
+    To access the query parameters and fragments
+    this.route.snapshot.queryParams.paramsName
+    this.route.snapshot.fragment.paramsName
+
+## Setting up the child nested routes
+
+We can set up the child nested routes in the following way.
+
+    {
+    path: 'servers',
+    component: ServersComponent,
+    children: [
+      { path: ':id', component: ServerComponent },
+      { path: ':id/edit', component: EditServerComponent },
+    ],
+    },
+
+Child nested routes help us to render the content on the same page without removing all the content.
+
+## Handlings of query parameter
+
+We can handle the query parameter in the following way.
+We need this as when we try to append something to our route then the query parameter are lost. So in order to maintain them we have to use queryParamsHandling. 'merge' help us to merge new query params with old one and 'preserve' only preserve the old ones.
+
+    onEdit() {
+        this.router.navigate(['edit'], {
+          relativeTo: this.route,
+          queryParamsHandling: 'merge', //'preserve'
+        });
+      }
+
+## Redirecting and WildCards Routes
+
+     { path: '**', component: PageNotFoundComponent },
+     // { path: '**', redirectTo: '/not-found' },
+     //we should give this statement last otherwise it will redirect all the paths to this component only if we give it first.
+
+In our example, we didn't encounter any issues when we tried to redirect the user. But that's not always the case when adding redirections.
+
+By default, Angular matches paths by prefix. That means, that the following route will match both /recipes and just /
+
+{ path: '', redirectTo: '/somewhere-else' }
+
+Actually, Angular will give you an error here, because that's a common gotcha: This route will now ALWAYS redirect you! Why?
+
+Since the default matching strategy is "prefix" , Angular checks if the path you entered in the URL does start with the path specified in the route. Of course every path starts with '' (Important: That's no whitespace, it's simply "nothing").
+
+To fix this behavior, you need to change the matching strategy to "full" :
+
+{ path: '', redirectTo: '/somewhere-else', pathMatch: 'full' }
+
+Now, you only get redirected, if the full path is '' (so only if you got NO other content in your path in this example).
+
+## Outsourcing the route configuration
+
+    const appRoutes: Routes = [
+      { path: '', component: HomeComponent },
+      {
+        path: 'users',
+        component: UsersComponent,
+        children: [{ path: ':id/:name', component: UserComponent }],
+      },
+      { path: '**', component: PageNotFoundComponent },
+      // { path: '**', redirectTo: '/not-found' },
+    ];
+    @NgModule({
+      imports: [RouterModule.forRoot(appRoutes)],
+      exports: [RouterModule],
+    })
+    export class AppRoutingModule {}
+    //then import this module in app.module
+
+## Introduction to Guards
+
+Guards are a way to control access to certain routes in your application. They are functions that run before the route is activated, and they can decide whether the route should be activated or not. We can do so by using canActivate.
+Similarly we can decide whether allow to leave a route or not, we can do so by using canDeactivate.
+
+Guards are typically used to implement authentication and authorization logic.
+Guards are also used to implement other types of logic, such as:
+
+- Checking if a user has a certain role or permission
+- Checking if a user has completed a certain task or step
+- Checking if a user has a certain configuration or setting
+- And many other scenarios
+
+Guards are typically implemented as services, and they are injected into the route configuration using the canActivate or
+canDeactivate properties.
+
+## Protecting Routes with canActivate (deprecated)/ canActivateFn
+
+Look at code
+
+## Controlling navigation with canDeactivate
+
+Look at code
+
+## Resolving Dynamic Data With Resolve Guard
+
+Resolver is a service which allow us to run some code before a route is rendered. The difference from canActivate is that resolver will not decide whether the route is rendered or not in the end route will always be rendered but it will do some preloading. It will fetch some data that component will need later on.
+It will help us to load some data before the route/component is displayed instead of displaying the route and then loading the data.
