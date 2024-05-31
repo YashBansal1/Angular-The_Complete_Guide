@@ -1209,3 +1209,87 @@ Look at code
 
 Resolver is a service which allow us to run some code before a route is rendered. The difference from canActivate is that resolver will not decide whether the route is rendered or not in the end route will always be rendered but it will do some preloading. It will fetch some data that component will need later on.
 It will help us to load some data before the route/component is displayed instead of displaying the route and then loading the data.
+
+# Understanding Observable
+
+Observable is a way to handle asynchronous data in Angular. It's a part of the RxJS library.
+Observable is an object we import from the third party package, RxJS.
+Observable can be think of various data sources.
+There is observable and observer.
+Observer is the one who is interested in the data.
+Observable is the one who provides the data.
+Observer subscribe to the observable.
+It has three ways of handling data packages, we can handle the normal data, we can handle errors, we can handle the completion of observable.
+
+In order to follow along smoothly with the course examples, make sure you install RxJS v6 by running
+
+    npm install --save rxjs@6
+
+In addition, also install the rxjs-compat package:
+
+    npm install --save rxjs-compat
+    This package is required to ensure compatibility with older versions of RxJS.
+
+Observables are stream of data and whenever the data changes our subscription will know about it.
+
+For observables created by us we have to make sure that we unsubscribe from those observables if we don't need them, otherwise they will keep emitting the values. And every time we go to observable it will again fire a new emitter without stopping the old one
+There are some observables that emit a value once and are done with it.
+
+In subscribe first argument is for how to handle data, and second if for the how to handle the error, and third is for to completion handler function.
+
+    this.firstObsSubscription = customIntervalObservable.subscribe(
+         (data) => {
+           console.log(data);
+         },
+         (error) => {
+           alert(error.message);
+         }
+         ,
+         () => {
+            console.log('completed');
+         }
+       );
+
+An error cancels the observable no need to unsubscribe.
+
+## Understanding Operators
+
+Operators are functions that take an observable as an input and return a new observable.
+They are used to manipulate the data emitted by an observable.
+They are used to transform, filter, combine, and manipulate the data emitted by an observable.
+They are used to handle errors, and to handle the completion of an observable.
+They are used to delay, debounce, throttle, and retry the data emitted by an observable.
+
+We can use operators between our observable and subscription.
+That means that the data point, first of all reach the operators
+and they do something to the data and then we subscribe to the result of these operators.
+
+    const transformedIntervalObservable = customIntervalObservable.pipe(
+         map((data) => {
+           return 'Round: ' + (+data + 1);
+         })
+       );
+
+    this.firstObsSubscription =
+      // customIntervalObservable.subscribe(
+      transformedIntervalObservable.subscribe(
+        (data) => {
+          console.log(data);
+        },
+        (error) => {
+          alert(error.message);
+        },
+        () => {
+          console.log('completed');
+        }
+      );
+    }
+    //We have to subscribe to the new observable returned by pipe.
+    //The pipe method returns a new observable.
+
+## Subjects
+
+A subject is a special type of observable that can also act as an observer.
+It can receive and emit data.
+Instead of using evenEmitter in our service class we can make use of subjects. This is also the recommended way.
+With @Output we should can't use subject with them we have to use the event emitter only.
