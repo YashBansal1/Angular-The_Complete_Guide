@@ -1575,3 +1575,53 @@ Now our angular by default see the form tag in html and create a form we need to
      });
 
 We can also use setValue and patchValue with the reactive form.
+
+# Using pipes to transform output
+
+Pipes are used to transform the output of a component. They are used to format the data before it is displayed to the user.
+There are two types of pipes:
+
+1.  Pure pipes: These are the pipes that are only called when the input changes.
+
+2.  Impure pipes: These are the pipes that are called every time the component is checked for changes. It leads to the high cost.
+
+         <strong>{{ server.name | uppercase }}</strong> |
+          {{ server.instanceType | uppercase }}
+          {{ server.started | date }}
+
+## Parameterizing Pipes
+
+We can pass parameters to pipes using a colon.
+
+    {{ server.started | date: 'fullDate' }}
+
+## Chaining Pipes
+
+We can also chain multiple pipes together.
+
+    {{ server.started | date: 'fullDate' | uppercase }}
+
+We should watch the order as it may give error if used wrongly.
+
+## Custom Pipes
+
+We can create our own custom pipes.
+
+import { Pipe, PipeTransform } from '@angular/core';
+
+    @Pipe({
+      name: 'filter',
+      pure: false //if we want to make the pipe impure
+    })
+    export class ShortenPipe implements PipeTransform {
+      transform(value: string): string {
+        if (value.length > 3) {
+          return value.substring(0, 3) + '...';
+        }
+        return value;
+      }
+    }
+
+Add the class to the declarations in app.module.ts
+
+    {{ appStatus | async }} // works with async data
