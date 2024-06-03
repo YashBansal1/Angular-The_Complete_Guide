@@ -1458,4 +1458,120 @@ We can also pass the form values to reset the form with specific values.
 
 this will reset the form with specific values.
 
-#Reactive Approach
+# Reactive Approach
+
+To use reactive approach we need to import
+
+      ReactiveFormsModule,
+
+it provides most of the tool that we need to create a form.
+
+In our typescript code we need to define the a property that cana hold our form and it will be of the type FormGroup as our form is nothing more than a group of controls. NgForm also act likes a wrapper on the FormGroup.
+
+    ngOnInit() {
+      this.signupForm = new FormGroup({
+        userData: new FormGroup({
+          'username': new FormControl(null), //we are using string here because we don't want it mangled as we are going to use it in our html form.
+          'email': new FormControl(null),
+        }),
+        'gender': new FormControl('male'),
+      });
+    }
+
+Now our angular by default see the form tag in html and create a form we need to tell him that use our form object.
+
+    <form [formGroup]="signupForm"></form>
+    <!-- we are using formGroup directive here ReactiveFormModule-->
+    <!-- we are telling angular to use our form object instead of creating a new one -->
+
+    <!-- we are using formControlName directive here ReactiveFormModule -->
+          <input
+            type="text"
+            id="username"
+            class="form-control"
+            formControlName="username"
+          />
+
+## Adding validation
+
+     username: new FormControl(null, Validators.required),
+      email: new FormControl(null, Validators.email),
+
+## Getting access to control in html form
+
+      <div
+            class="alert alert-danger"
+            *ngIf="
+              signupForm.get('username').invalid &&
+              signupForm.get('username').touched
+            "
+          >
+
+## FormArray (Arrays of Form Control)
+
+     ngOnInit() {
+       this.signupForm = new FormGroup({
+         username: new FormControl(null, Validators.required),
+         email: new FormControl(null, [Validators.required, Validators.email]),
+         gender: new FormControl('male'),
+         hobbies: new FormArray([]),
+       });
+     }
+
+     onSubmit() {
+       console.log(this.signupForm);
+     }
+
+     onAddHobby() {
+       (<FormArray>this.signupForm.get('hobbies')).push(
+         new FormControl(null, Validators.required)
+       );
+     }
+
+     get controls() {
+       return (<FormArray>this.signupForm.get('hobbies')).controls;
+     }
+
+## Creating custom validators
+
+    username: new FormControl(null, [
+           Validators.required,
+           this.forbiddenNames.bind(this),
+         ]),
+
+
+    forbiddenNames(control: FormControl): { [s: string]: boolean } {
+       if (this.forbiddenUsernames.indexOf(control.value) !== -1) {
+         return { nameIsForbidden: true };
+       }
+       return null;
+    }
+
+     signupForm.get('username').errors['nameIsForbidden']
+
+## creating async validators
+
+    forbiddenEmails(control: FormControl): Promise<any> | Observable<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+          setTimeout(() => {
+            if (control.value === 'test@test.com') {
+              resolve({ emailIsForbidden: true });
+            } else {
+              resolve(null);
+            }
+          }, 1500);
+        });
+        return promise;
+      }
+
+## Reacting to status value changes
+
+    this.signupForm.valueChanges.subscribe((value) => {
+      console.log(value);
+     });
+
+     this.signupForm.statusChanges.subscribe((value) => {
+       console.log(value);
+     });
+
+We can also use setValue and patchValue with the reactive form.
