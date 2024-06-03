@@ -1293,3 +1293,169 @@ A subject is a special type of observable that can also act as an observer.
 It can receive and emit data.
 Instead of using evenEmitter in our service class we can make use of subjects. This is also the recommended way.
 With @Output we should can't use subject with them we have to use the event emitter only.
+
+# Handling Forms in Angular Apps
+
+Angular give us javascript object representation of our form, which make it easy to work with values and to see the state of the form and to work with it.
+
+Angular offers two approaches when it comes to handling form-
+
+1. Template Driven Forms-
+   Angular infers the form object from the DOM.
+   We simply set up our form in the template, in HTML code, and angular will automatically infer the structure of the form, will infer it which control our forms, has which inputs and makes it easy for us to get started quickly.
+2. Reactive Approach-
+   We create the form object programmatically in our component class. It is more complex approach.
+   We actually define the structure of the form and also the HTML code and manually connect it. This gives us great control over it.
+
+## Template Driven Approach
+
+We need to import FormModules in our AppModule to use this approach.
+For angular form element in our HTML code serve as a selector to directive which when found then angular creates a javascript representation of the form for us.
+Angular will not automatically detects input in our form. And it is good as we might not always want to add these elements as control to our forms (what is in our javascript objects).
+So we still needs to register control manually.
+
+    We can do this by using ngModel directive.
+     <input
+              type="text"
+              id="username"
+              class="form-control"
+              ngModel
+              name="username"
+            />
+
+    ngModel directive is used to register input element as a control in our form.
+    We can also use ngModelGroup directive to register a group of input elements as a control in our form.
+    We can also use formControlName directive to register a single input element as a control in our form.
+    We can also use formGroupName directive to register a group of input elements as a control in our form.
+    We can also use formArrayName directive to register an array of input elements as a control in our form.
+
+To get access to the javascript representation of the form we need to use ngSubmit and pass the localReference which is assigned to ngForm. The local reference will be of the type NgForm. We can access the javascript object by form.value where form is the argument passed to the onSubmit.
+
+    <form (ngSubmit)="onSubmit(f)" #f="ngForm"></form>
+
+We can also viewChild to access teh form as we can access the local references using view child. This is useful when we need to access the form not only when we submit but also a little earlier.
+
+        @ViewChild('f') signUpForm: NgForm;
+
+## Adding validation to check for user input
+
+     <input
+              type="text"
+              id="username"
+              class="form-control"
+              ngModel
+              name="username"
+              required
+            />
+
+required is an default html attribute but here act as a selector for the inbuilt directive of angular which make sure that the it will be treated as invalid if it is empty. It automatically configures our form to do so.
+
+email make sure that it is a valid email.
+
+It tracks if the form is valid or not on per-control level and also at form level. Also in html code it dynamically adds the some classes giving us the information of the individual control here.
+
+[
+Check out the Validators class: https://angular.io/api/forms/Validators
+For the template-driven approach, you need the directives. You can find out their names, by searching for "validator" in the official docs: https://angular.io/api?type=directive - everything marked with "D" is a directive and can be added to your template.
+]
+
+    Additionally, you might also want to enable HTML5 validation (by default, Angular disables it). You can do so by adding the ngNativeValidate  to a control in your template.
+
+We can use to whether our form is valid or not to make submit button disable or enable
+
+     <button class="btn btn-primary" type="submit" [disabled]="!f.valid">Submit</button>
+
+We can use the classes added by angular to show some visual
+
+    input.ng-invalid.ng-touched,
+    select.ng-invalid.ng-touched {
+      border: 1px solid red;
+    }
+
+## Outputting Validating Error message
+
+By using the form local reference
+
+    <div
+              class="alert alert-danger"
+              *ngIf="f.controls.username.invalid && f.controls.username.touched"
+            >
+              <span class="help-block">Please Enter a Valid UserName</span>
+            </div>
+
+By using the control local reference
+
+    <input type="email" id="email" class="form-control"
+    ngModel name="email" required
+    email
+    #email="ngModel" />
+
+    <div class="alert alert-danger"
+     *ngIf="email.invalid && email.touched">
+
+     <span class="help-block">Please Enter a Valid Email</span>
+    </div>
+
+## Setting Default values with ngModel Property Binding
+
+We can set default values by using ngModel property binding
+
+     <select
+            id="secret"
+            class="form-control"
+            [ngModel]="defaultQuestion"
+            name="secret"
+            required
+          >
+          //defaultQuestion is describe in typescript code
+
+## Using ngModel with two way binding
+
+We can use ngModel with two way binding to bind the data to the form and also to the typescript code. Our element will still be part of the value object.
+
+## Grouping Form Controls
+
+We can group form controls using ngModelGroup directive.
+
+    <div id="user-data" ngModelGroup="userData" #userData="ngModelGroup">
+
+    When we group form controls then we can't access the properties form outer form group, we have tp use this group
+       <div
+              class="alert alert-danger"
+              *ngIf="userData.touched && userData.invalid"
+            >
+              <span class="help-block">Please Enter a Valid UserName</span>
+            </div>
+
+And we can also get the javascript object of this grouped form control by passing the ngModelGroup in our local reference.
+
+## Setting and Patching Form values
+
+We can set and patch form values using ngForm and ngModel.
+We can set the form values using ngForm.setValue() method.
+
+    const suggestedName = 'Superuser';
+    this.signupForm.form.patchValue({ userData: { username: suggestedName } }); //for part of the form
+
+    we can also use
+    this.signupForm.form.setValue(); //for whole form
+     //in this we have to pass the value for the all javascript object of the form, so form will reset for other entered values, so it's not a good approach.
+
+## Using Form Data
+
+We can use form data to get the form values.
+We can use form.value to get the form values.
+We can also use form.get('controlName') to get the specific control value.
+
+## Resetting form
+
+    this.signupForm.reset()
+
+this will reset the form and also reset the form validation.
+We can also pass the form values to reset the form with specific values.
+
+    this.signupForm.reset({ userData: { username: '', email: '' } });
+
+this will reset the form with specific values.
+
+#Reactive Approach
