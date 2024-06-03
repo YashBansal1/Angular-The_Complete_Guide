@@ -1625,3 +1625,216 @@ import { Pipe, PipeTransform } from '@angular/core';
 Add the class to the declarations in app.module.ts
 
     {{ appStatus | async }} // works with async data
+
+# Making HTTP Requests
+
+Angular provides a built-in HTTP client module that allows us to make HTTP requests.
+We need to import the HttpClientModule in app.module.ts.
+We can use the HttpClient in our components.
+We can use the get, post, put, delete methods to make HTTP requests.
+We can also use the subscribe method to handle the response.
+We can also use the catchError method to handle errors.
+We can also use the tap method to perform some side effects.
+We can also use the finalize method to perform some side effects when the observable is completed.
+We can also use the retry method to retry the request if it fails.
+We can also use the retryWhen method to retry the request if it fails based on a condition.
+We can also use the timeout method to set a timeout for the request.
+
+## How To connect Angular to a Database
+
+Angular is a frontend framework and it does not have the capability to connect to a database directly. And doing so would be highly insecure as everyone can read our angular code.
+
+We need to use a backend framework like Node.js, Django, Ruby on Rails, etc. to connect to a database.
+
+We can send Http Requests and we get Http responses to and from a server. When we say server we mean an API like Rest or GraphQl.
+API is like a website but when we visits its url we don't get the html page but data.
+
+[
+We can use RESTful APIs to communicate between the frontend and the backend.
+The backend will handle the database operations and send the data to the frontend through APIs.
+The frontend will make HTTP requests to the backend to retrieve or send data.
+We can use the HttpClient in Angular to make HTTP requests to the backend.
+We can also use libraries like Axios to make HTTP requests.
+We can also use libraries like Socket.io to establish real-time communication between the frontend and the backend.
+We can also use libraries like GraphQL to make queries to the backend.
+We can also use libraries like Redux or NgRx to manage the state of our application.
+We can also use libraries like Firebase or AWS Amplify to connect to a database without setting up a backend.
+
+]
+
+## Anatomy of Http Requests
+
+HTTP verb - Request Method: GET, POST, PUT, DELETE, etc.
+URL (API Endpoint) -> /post/1
+Headers (MetaData) -> {"content-type":"app.json"}
+Body -> {title: "New-Post"} [POST, PUT, PATCH]
+
+## Sending a post request
+
+    this.http
+          .post(
+            'https://ng-complete-guide-58bb1-default-rtdb.firebaseio.com/posts.json',
+            postData
+          )
+          .subscribe((responseData) => {
+            console.log('Sent data successfully ' + responseData);
+          })
+
+We can sent the http request, using different http methods and these methods return an observable and we need to subscribe to them in order to get and handle the http response.
+If we don't subscribe to observable created by request angular will think we are not interested in response and since we are not interested in response there is no need to send the request.
+
+    this.http
+        .get(
+          'https://ng-complete-guide-58bb1-default-rtdb.firebaseio.com/posts.json'
+        )
+        .subscribe((posts) => {
+          console.log('Fetched data successfully');
+          console.log(posts);
+        });
+
+## Using RxJs Operators to transform data
+
+We can use RxJs operators to transform data before we subscribe to it.
+
+    this.http
+         .get(
+           'https://ng-complete-guide-58bb1-default-rtdb.firebaseio.com/posts.json'
+         )
+         .pipe(
+           map((responseData) => {
+             const postsArray = [];
+             for (const key in responseData) {
+               if (responseData.hasOwnProperty(key)) {
+                 postsArray.push({ ...responseData[key], id: key });
+               }
+             }
+             return postsArray;
+           })
+         )
+         .subscribe((posts) => {
+           console.log('Fetched data successfully');
+           console.log(posts);
+         });
+
+## Sending a Delete request
+
+     return this.http.delete(
+          'https://ng-complete-guide-58bb1-default-rtdb.firebaseio.com/posts.json'
+        );
+
+## Handling Errors
+
+1.  Passing second argument inside the subscribe
+
+         this.postsService.fetchPosts().subscribe(
+              (posts) => {
+                console.log('Fetched data successfully');
+                console.log(posts);
+                this.isFetching = false;
+                this.loadedPosts = posts;
+              },
+              (error) => {
+                this.error = error.message;
+              }
+            );
+
+2.  Using Subject and then subscribing to the error
+
+         (error) => {
+                this.error.next(error.message);
+              } //in subscribe
+
+3.  catchError operator in pipe as second argument
+
+## Setting Headers
+
+    this.http
+          .get<{ [key: string]: Post }>(
+            'https://ng-complete-guide-58bb1-default-rtdb.firebaseio.com/posts.json',
+            {
+              headers: new HttpHeaders({
+                'Custom-Header': 'Hello',
+              }),
+            }
+          )
+
+## Adding Query Params
+
+    return this.http
+          .get<{ [key: string]: Post }>(
+            'https://ng-complete-guide-58bb1-default-rtdb.firebaseio.com/posts.json',
+            {
+              headers: new HttpHeaders({
+                'Custom-Header': 'Hello',
+              }),
+              params: new HttpParams().set('print', 'pretty'),
+            }
+          )
+
+## Different response type
+
+     this.http
+         .post<{ name: string }>(
+           'https://ng-complete-guide-58bb1-default-rtdb.firebaseio.com/posts.json',
+           postData,
+           {
+             observe: 'response',
+             responseType: 'text'
+           }
+
+Using observe we can tell what to return.
+observe can take the value response, event or body.
+responseType can take the value json, text, blob, arraybuffer.
+
+## Interceptors
+
+Interceptors are used to manipulate the request or response before it reaches the application.
+They are used to add headers, authentication, caching, logging etc.
+To create an interceptor, we need to create a class that implements the HttpInterceptor interface.
+Then we need to add it to the providers array in the module.
+
+Request Interceptors
+
+    export class AuthInterceptor implements HttpInterceptor {
+      intercept(
+        req: HttpRequest<any>,
+        next: HttpHandler
+      ): Observable<HttpEvent<any>> {
+        console.log('Request is on its way');
+        return next.handle(req);
+      }
+    }
+
+    providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    ],
+
+## Manipulating Request Object
+
+     export class AuthInterceptor implements HttpInterceptor {
+          intercept(
+            req: HttpRequest<any>,
+            next: HttpHandler
+          ): Observable<HttpEvent<any>> {
+            console.log('Request is on its way');
+            const modifiedRea = req.clone({
+                 headers: req.headers.append('auth', 'xyz'),
+            })
+            return next.handle(modifiedRea);
+          }
+        }
+
+We can't change the original request as it is immutable but we can create a modified req and set the new properties we want and pass it to the server.
+
+We can also use response interceptors all we have to do is use the pipe
+
+        next.handle(modifiedReq).pipe();
+
+We can give multiple interceptors
+
+    providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true }
+    ],
+
+We have to be aware about the order in which they are given because it matters.
