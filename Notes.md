@@ -1576,6 +1576,11 @@ Now our angular by default see the form tag in html and create a form we need to
 
 We can also use setValue and patchValue with the reactive form.
 
+(<FormArray>this.recipeForm.get('ingredients')).clear();
+The clear() method automatically loops through all registered FormControls (or FormGroups) in the FormArray and removes them.
+
+It's like manually creating a loop and calling removeAt() for every item.
+
 # Using pipes to transform output
 
 Pipes are used to transform the output of a component. They are used to format the data before it is displayed to the user.
