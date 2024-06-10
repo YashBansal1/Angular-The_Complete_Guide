@@ -1843,3 +1843,17 @@ We can give multiple interceptors
     ],
 
 We have to be aware about the order in which they are given because it matters.
+
+# Authentication and Route Protection in Angular
+
+Now if you think about a traditional web application, where the server would render pages for different URLs you enter, so where the server would render different HTML pages for the different URLs, you would work with a session but remember that with Angular, we built single page applications. That means we also decouple the front-end, the Angular application from the back-end. For the different ages we visit, that all gets handled by Angular and its router. Javascript in the browser takes over and re-renders pages or parts of pages as our user interface and the current state of the user equires it.
+
+we can still interact with a server but that server will be a RESTful API and therefore we'll not use a session because RESTful APIs are stateless, the same would be true for GraphQL API by the way. The core thing is that our back-end, our server will be an API. It will not be a server that renders the HTML pages we're on and therefore sessions can't be used because our server doesn't care about the client. Client and server are decoupled from each other, they communicate through the HttpClient Angular offers but besides that, there is no connection, the server doesn't know our client so to say. And therefore, a session is no solution, a session would be stored on the server and as I just said, the server doesn't care about our client.
+
+Instead we'll use a different approach, where the server will validate the user e-mail and password and if all that data is valid, the server will send the client a token, a JSON Web Token typically. That is an encoded string which contains a lot of metadata and that string is encoded not encrypted, that's important, which means this string could be unpacked and read by the client.
+
+More importantly though, that string, that token is generated on the server with a certain algorithm and a certain secret which only the server knows and only the server can validate incoming tokens for their validity because the idea is that the client, which is our browser, our Angular App, stores that token in some storage, like a local storage of the browser and attaches the token to any request that thereafter is sent to the server which needs to be authenticated.
+
+Now the server is able to validate that token because the server did create that token with a certain algorithm and a certain private key, which is only known to the server, that is how the token is secured. We can't generate or edit the token on the client because as soon as we do that, it will not fit the algorithm and private key used on the server and the server is therefore able to determine that that token is invalid and the server can therefore block access.
+
+![alt text](image-1.png)

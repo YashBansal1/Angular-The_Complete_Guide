@@ -205,6 +205,8 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 
+/24.authentication-route-protection-in-angular/src/app/shared/api-keys.ts
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,node,angular
 
 
