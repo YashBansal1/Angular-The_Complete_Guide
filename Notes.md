@@ -1858,10 +1858,6 @@ Now the server is able to validate that token because the server did create that
 
 ![alt text](image-1.png)
 
-# Dynamic Components
-
-Dynamic components are components that are created at runtime. They are not part of the initial component tree.
-
 # Angular as a platform and closer look at the angular CLI
 
 ## Angular cli schematics
@@ -1915,3 +1911,11 @@ To create more cleaner structure
 ## Angular Libraries
 
 It is same as our application, only difference is that it does not meant to run standalone as a web application, it's meant to have some code that can be shared across multiple web application. For example angular material.
+
+# A basic introduction to Unit Testing in our angular apps
+
+![alt text](image-2.png)
+
+Guard against breaking changes.
+Analyze code behavior(Expected or Unexpected)
+Reveal Design Mistakes
