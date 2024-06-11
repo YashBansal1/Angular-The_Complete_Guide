@@ -1857,3 +1857,61 @@ More importantly though, that string, that token is generated on the server with
 Now the server is able to validate that token because the server did create that token with a certain algorithm and a certain private key, which is only known to the server, that is how the token is secured. We can't generate or edit the token on the client because as soon as we do that, it will not fit the algorithm and private key used on the server and the server is therefore able to determine that that token is invalid and the server can therefore block access.
 
 ![alt text](image-1.png)
+
+# Dynamic Components
+
+Dynamic components are components that are created at runtime. They are not part of the initial component tree.
+
+# Angular as a platform and closer look at the angular CLI
+
+## Angular cli schematics
+
+Schematics are the blueprint which certain angular command pick up.
+For example we can have schematics for the ng generate, ng add, ng update.
+
+We can build our own schematics or use third part schematics like angular material.
+
+    ng add @angular/material
+    ng generate @angular/material:nav main-nav
+
+    ng update
+
+## Builders
+
+With builders we can build our application for different environments.
+Built in builders - ng build/ ng test/ ng lint
+It compiles, analyze our code and optimize it for the production, run tests on it Or simply tell us how good our code quality is.
+
+There is another Builder Called Ng deploy.
+It will build our product for production, but then also go ahead and deploy it to a certain host.
+We can build our own builder or hook into already existing configuration of all built in builder.
+
+    npm install firebase-tools
+    ng add @angular/firebase
+    ng deploy
+
+## Differential loading
+
+Differential loading is a feature that allows us to load different versions of our application based on the browser.
+For example, we can load es2015 version for modern browsers and es5 version for older browsers.
+This is done by creating two different bundles for our application.
+One for modern browsers and one for older browsers.
+Angular cli will automatically generate these bundles for us.
+In our dist folder we can see the versions for different browser and need to specify which version to use in which browser and to run on which browser in browserslist.
+
+## Managing multiple projects in one folder
+
+We can have multiple projects in one folder.
+
+    ng generate application/[library] backend
+    ng serve -project=backend
+
+To create more cleaner structure
+
+    ng new name --create-application=false
+    ng generate application frontend //now generate the application
+    they will have their own folder in project folder
+
+## Angular Libraries
+
+It is same as our application, only difference is that it does not meant to run standalone as a web application, it's meant to have some code that can be shared across multiple web application. For example angular material.
