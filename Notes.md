@@ -1976,3 +1976,25 @@ Server-side rendering (SSR) can make sense because of SEO considerations (crawle
 But that also has one important implication: You MUST NOT use any browser-only APIs like document.querySelector() in your Angular code!
 
 Simply because it will execute on the server and there, such APIs are not available.
+
+# Standalone components
+
+Angular 14 introduced standalone components, which allow you to create components that don't need to be part of a module.
+Standalone components are a new way of building Angular applications, and they're especially useful when building server rendered applications.
+With standalone components, you can create components that can be used independently of a module, which makes it easier to build and maintain your application.
+Standalone components are also useful when building server-rendered applications, because they allow you to render components on the server without having to create a module for them.
+To create a standalone component, you can use the @Component decorator and set the standalone property to true.
+
+    In our standalone component not only we can import standalone component, directives, and pipes but also can import other modules but in modules if we want to make use of the standalone components we have to add it to imports instead of the declarations.
+
+Standalone components are not part of any module, so they can't be used in a module, Standalone components can be used in other standalone components, or in modules that import them.
+
+    But should you use standalone components in all scenarios?
+
+    Well, for the moment, that's probably a "No". Especially for large, very complex applications, NgModules reduce the amount of boilerplate code (imports etc.) that needs to be written. NgModules can also help with structuring dependency injection, bundling features together and more.
+
+We can also provide our services with the providers properties in the component but it will have its own copy of the service, to make it available globally we can pass a second argument to bootstrap application and in that pass our service in the providers array.
+
+    bootstrapApplication(AppComponent, {
+    providers: [AnalyticsService],
+    })
