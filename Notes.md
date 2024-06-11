@@ -1919,3 +1919,60 @@ It is same as our application, only difference is that it does not meant to run 
 Guard against breaking changes.
 Analyze code behavior(Expected or Unexpected)
 Reveal Design Mistakes
+
+# Angular Universal
+
+Angular is a client-side JavaScript framework, which simply means that the code you write in the end runs in the browser. And whilst this has some advantages, for example, giving a user this great user experience of instant responses and high application reactivity, this also has some potential disadvantages.
+
+Most importantly, it impacts search engine optimization. You have no or almost no search engine optimization when building Angular apps just like that because web search crawlers like the Google crawler can't really see the content of your website. They basically see an empty page.
+
+It is of course worth noting that it's not necessarily a disadvantage for all Angular apps. If you are building some application that requires user authentication anyways, it might, for example, not really matter because search engines wouldn't be able to authenticate anyways.
+
+And another potential disadvantage is that you can have a slow page load. Especially if you are on a slow network or on a slow device, loading the page and displaying content on the page can take some time because all this JavaScript code must be downloaded before something is rendered to the screen, and therefore users in slow networks or on slow devices might not see the content of your website very quickly.
+
+Angular Universal simply is an extra package, you could say. Some extra settings. Some extra features we add to our Angular app that actually adds some server-side functionality to the app. To be precise with Angular Universal enabled or to be precise with your Angular app being transformed to an Angular Universal app, you get the best of both worlds. You still have a client-side single page application once the Angular app was downloaded from the server, but the very first page that's loaded by a user will actually be pre-rendered on the server which simply means that the finished page will be served to the user. And the user or web search crawler, therefore doesn't have to wait for the Javascript code to be downloaded and executed to see something on the screen, but it's really just this first initial page load subsequent navigations on the page and so on will still be handled by Angular on the client side. So you still have that single page application just with this extra optimization for the first page load.
+
+In the next lecture, we'll convert an existing Angular app to an Angular Universal app by running
+
+    ng add @nguniversal/express-engine.
+
+This command is still the command you should use, if you're working on a project that uses Angular 16 or older (which many projects out there still do).
+
+But if you're working on an Angular 17 project (check the package.json file to find out), the correct command to run would be
+
+    ng add @angular/ssr.
+
+In general, with Angular 17, "Angular Universal" was pretty much renamed to "Angular SSR" (SSR stands for Server-side Rendering).
+
+## Creating Angular SSR Apps with Angular 17+
+
+If you want to create a new Angular project that comes with Universal / SSR enabled out of the box, you can run
+
+     ng new <project-name> --ssr.
+
+## Running a SSR / Universal Project with Angular 17+
+
+If you are using Angular 17, running a SSR-enabled project also is easier than doing so with Angular 16 or lower.
+
+All you have to do with Angular 17, is run ng serve. It'll automatically use SSR if you enabled it via
+
+    ng add @angular/ssr or ng new <project-name> --ssr
+
+## Deploying angular universal app
+
+To deploy an Angular Universal app, you'll need to create a production build of your app. You can do this by running
+
+    npm run build:ssr
+
+Need to do this only locally before we deploy our app
+This command will create a production build of your app in the dist folder.
+Then you can deploy this dist folder to your server/ hosting provider.
+You can also use a cloud platform like Vercel, Netlify, or Firebase Hosting to deploy your Angular Universal app.
+
+    package.json, angular.json and dist folder is all we need to host our application on the server.
+
+Server-side rendering (SSR) can make sense because of SEO considerations (crawler should see what your users see) or because you want to deliver a finished page to your users (rather than creating the page in the browser).
+
+But that also has one important implication: You MUST NOT use any browser-only APIs like document.querySelector() in your Angular code!
+
+Simply because it will execute on the server and there, such APIs are not available.
