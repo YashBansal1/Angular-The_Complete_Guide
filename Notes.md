@@ -1998,3 +1998,40 @@ We can also provide our services with the providers properties in the component 
     bootstrapApplication(AppComponent, {
     providers: [AnalyticsService],
     })
+
+# Angular Signals
+
+Angular Signals is a new feature in Angular 17 that allows you to create reactive, observable-like values.
+Signals are a new way of handling state changes in Angular applications. They're similar to observables, but they're more lightweight and easier to use.
+Signals are created using the signal() function, and they can be used to create reactive values that can be observed by components and services.
+
+Classic change detection ("Zone Based change detection"), in this changes are detected automatically, and ui is updated automatically. But this approach performance is not that good and the bundle size is increased.
+But signals provide full control, better performance and smaller bundle.
+
+signals have functions like set(), update(p=>p+1), mutate(p=>p+1)
+to set the value of the counter.
+and to access the value of the signals we need to call the variable as a function.
+
+The difference between update and mutate is that the update update the value by creating a new value, while mutate can be used with mutable variables which can have changes in them.
+
+In the future, you'll be able to mark components as signal-based (presumably by adding the signals: true flag to @Component) to let Angular know that it should not use its regular change detection algorithm in such components.
+
+And that's just one feature, of course. In signal-based components, you'll also be able to get rid of many decorators like @Input() or @Output() (and others). You would use special functions instead:
+
+@Input() title: string;
+would become
+
+title = input<string>();
+
+## computed()
+
+Computed signals are a new feature in Angular 17 that allows you to create computed values based on other
+signals. Computed signals are created using the computed() function, and they can be used to create
+values that are derived from other signals.
+Computed signals are useful when you need to create a value that depends on other values.
+
+    computed(()=> signalName()*2);
+
+Whenever the signal value changes then the computed will also compute the value again.
+
+similarly we can use effect(()=>{}) this is use to execute some code whenever the signal value changes.
