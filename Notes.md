@@ -2035,3 +2035,28 @@ Computed signals are useful when you need to create a value that depends on othe
 Whenever the signal value changes then the computed will also compute the value again.
 
 similarly we can use effect(()=>{}) this is use to execute some code whenever the signal value changes.
+
+# Using NgRx for State Management
+
+NgRx is a popular state management library for Angular applications. It provides a predictable, scalable, and
+maintainable way to manage state in your application.
+Aims to help with the management of more complex, (app-wide) state. May be used instead of managing complex state in components or services.
+
+NgRx is built on top of the RxJS library, which provides a powerful way to work with observables.
+NgRx provides a set of libraries that help you manage state in your application:
+
+- @ngrx/store: Provides a single source of truth for your application's state.
+- @ngrx/effects: Handles side effects, such as API calls, in a predictable way.
+- @ngrx/router-store: Integrates the router with the store, allowing you to manage route state
+- @ngrx/entity: Provides a set of utilities for managing collections of entities.
+- @ngrx/component-store: Provides a simple way to manage local component state.
+
+State refers to change in data over time and these changes should be reflected in UI.
+
+![alt text](image-3.png)
+
+# Dynamic Components
+
+Those are loaded programmatically, ngIf is one way to load our components programmatically. In this component embedded via selector (declaratively). Here ngIf controls whether component is added to DOM.
+
+We can use Dynamic Component Loader, component created and added to DOM via code (imperatively). Component is managed and added by developer.
